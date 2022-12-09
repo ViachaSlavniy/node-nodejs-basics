@@ -4,8 +4,9 @@ const transform = async () => {
     try {
         const createRevertStringTransformStream = () => {
             return new Transform({
-                transform(chunk) {
-                    return chunk.toString().split('').reverse().join('');
+                transform(chunk, _, callback) {
+                    const reversChunk = chunk.toString().split('').reverse().join('');
+                    callback(null, reversChunk)
                 }
             })
         }

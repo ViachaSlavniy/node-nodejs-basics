@@ -1,29 +1,32 @@
 import {Worker} from 'worker_threads';
 import {cpus} from 'os';
+import {fileURLToPath} from 'url';
+import {createCorrectPath} from "../helper.js";
 
+const _filename = fileURLToPath(import.meta.url)
+const workerPath = createCorrectPath(_filename, 'worker.js');
 
 const performCalculations = async () => {
     try {
         const cpusArr = cpus();
         const workersPromises = cpusArr.map((cpu, index) => {
             return new Promise((resolve, reject) => {
-                const worker = new Worker('./worker.js', {
+                const worker = new Worker(workerPath, {
                     workerData: 10 + index
                 })
                 worker.on('message', (message) => {
-                    if (message) {
-                        resolve({
-                            status: 'resolved',
-                            data: message
-                        })
-                    } else {
-                        reject(
-                            {
-                                status: 'error',
-                                data: null
-                            }
-                        )
-                    }
+                    resolve({
+                        status: 'resolved',
+                        data: message
+                    })
+                })
+                worker.on('error', () => {
+                    reject(
+                        {
+                            status: 'error',
+                            data: null
+                        }
+                    )
                 })
             })
         })
