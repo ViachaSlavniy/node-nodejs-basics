@@ -10,7 +10,7 @@ const performCalculations = async () => {
     try {
         const cpusArr = cpus();
         const workersPromises = cpusArr.map((cpu, index) => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 const worker = new Worker(workerPath, {
                     workerData: 10 + index
                 })
@@ -21,7 +21,7 @@ const performCalculations = async () => {
                     })
                 })
                 worker.on('error', () => {
-                    reject(
+                    resolve(
                         {
                             status: 'error',
                             data: null
